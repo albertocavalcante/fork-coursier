@@ -155,7 +155,8 @@ import coursier.core.VariantPublication
       .map { variant =>
         // Derive classifier from GMM attributes:
         // If org.gradle.category=documentation, use org.gradle.docstype as classifier (sources, javadoc)
-        val isDocumentation = variant.attributesMap.get("org.gradle.category").contains("documentation")
+        val isDocumentation =
+          variant.attributesMap.get("org.gradle.category").contains("documentation")
         val classifier = if (isDocumentation)
           variant.attributesMap.get("org.gradle.docstype").map(Classifier(_))
         else

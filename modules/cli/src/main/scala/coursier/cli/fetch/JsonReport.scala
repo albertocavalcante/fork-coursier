@@ -233,10 +233,11 @@ object JsonReport {
             .flatMap {
               case (dep, pub, art) =>
                 val attr = pub.fold(
-                  variantPub => {
+                  variantPub =>
                     // For VariantPublication (GMM), use its classifier if present
-                    variantPub.classifier.fold(dep.attributes)(c => Attributes(dep.attributes.`type`, c))
-                  },
+                    variantPub.classifier.fold(dep.attributes)(c =>
+                      Attributes(dep.attributes.`type`, c)
+                    ),
                   pub0 => dep.withPublication(pub0).attributes
                 )
                 val fileOpt = fileMap.get(art)
