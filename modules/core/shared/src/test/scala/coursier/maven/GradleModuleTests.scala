@@ -51,8 +51,6 @@ object GradleModuleTests extends TestSuite {
         assert(publications.get.nonEmpty)
 
         val pub = publications.get.head
-        // This assertion will fail until we add classifier field to VariantPublication
-        // and implement the logic to derive it from variant attributes
         assert(pub.classifier.isEmpty)
       }
 
@@ -79,8 +77,6 @@ object GradleModuleTests extends TestSuite {
         assert(publications.get.nonEmpty)
 
         val pub = publications.get.head
-        // This assertion will fail until we add classifier field to VariantPublication
-        // and implement the logic to derive it from variant attributes
         assert(pub.classifier.contains(Classifier("sources")))
       }
 
