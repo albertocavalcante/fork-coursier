@@ -106,6 +106,33 @@ object GradleModuleTests extends TestSuite {
         assert(pub.classifier.contains(Classifier("javadoc")))
       }
 
+      test("documentation variant with docstype=groovydoc should have groovydoc classifier") {
+        // Real-world example: org.apache.groovy:groovy:4.0.24 publishes groovydocElements variant
+        val variant = GradleModule.Variant(
+          name = "groovydocElements",
+          attributes = attrs(
+            "org.gradle.category" -> "documentation",
+            "org.gradle.docstype" -> "groovydoc",
+            "org.gradle.usage" -> "java-runtime"
+          ),
+          dependencies = Nil,
+          dependencyConstraints = Nil,
+          files = Seq(file("groovy-4.0.24-groovydoc.jar")),
+          `available-at` = None,
+          capabilities = Nil
+        )
+
+        val module = createGradleModule(Seq(variant))
+        val project = module.project(None)
+
+        val publications = project.variantPublications.get(Variant.Attributes("groovydocElements"))
+        assert(publications.isDefined)
+        assert(publications.get.nonEmpty)
+
+        val pub = publications.get.head
+        assert(pub.classifier.contains(Classifier("groovydoc")))
+      }
+
       test("documentation variant without docstype should have no classifier") {
         val variant = GradleModule.Variant(
           name = "docElements",
