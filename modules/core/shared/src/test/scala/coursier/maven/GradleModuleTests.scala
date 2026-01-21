@@ -5,7 +5,6 @@ import utest._
 
 object GradleModuleTests extends TestSuite {
 
-  // Helper to create a minimal GMM with specific variants
   def createGradleModule(variants: Seq[GradleModule.Variant]): GradleModule =
     GradleModule(
       formatVersion = "1.1",
@@ -17,11 +16,9 @@ object GradleModuleTests extends TestSuite {
       variants = variants
     )
 
-  // Helper to create variant attributes
   def attrs(pairs: (String, String)*): Map[String, GradleModule.StringOrInt] =
     pairs.map { case (k, v) => k -> GradleModule.StringOrInt(v) }.toMap
 
-  // Helper to create a file entry
   def file(name: String): GradleModule.ModuleFile =
     GradleModule.ModuleFile(name = name, url = name)
 
