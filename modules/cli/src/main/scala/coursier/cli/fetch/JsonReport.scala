@@ -234,7 +234,6 @@ object JsonReport {
               case (dep, pub, art) =>
                 val attr = pub.fold(
                   variantPub =>
-                    // For VariantPublication (GMM), use its classifier if present
                     variantPub.classifier.fold(dep.attributes)(c =>
                       Attributes(dep.attributes.`type`, c)
                     ),
