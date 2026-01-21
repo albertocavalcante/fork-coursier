@@ -18,8 +18,15 @@ import scala.util.control.NonFatal
 import scala.util.Properties
 
 object GitHubReleaseAssets {
-  def ghOrg  = "coursier"
-  def ghName = "coursier"
+  // Read from GITHUB_REPOSITORY env var (format: "owner/repo"), fallback to upstream
+  private val (defaultOrg, defaultName) = sys.env.get("GITHUB_REPOSITORY") match {
+    case Some(repo) if repo.contains("/") =>
+      val Array(org, name) = repo.split("/", 2)
+      (org, name)
+    case _ => ("coursier", "coursier")
+  }
+  def ghOrg  = defaultOrg
+  def ghName = defaultName
 
   private def contentType(path: os.Path): String = {
 

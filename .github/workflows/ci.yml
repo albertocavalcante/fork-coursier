@@ -3,13 +3,18 @@ on:
   push:
     branches:
     - main
+    - fork/main
     tags:
     - "v*"
   pull_request:
+    branches:
+    - main
+    - fork/main
 
 permissions:
   id-token: write
   attestations: write
+  contents: write
 
 jobs:
   compile-publish-all:
@@ -194,7 +199,8 @@ jobs:
 
   publish:
     needs: ["compile-publish-all", "test", "js-test", "bin-compat", "website-check", "format"]
-    if: github.event_name == 'push'
+    # Only publish to Sonatype on upstream repo (forks don't have secrets)
+    if: github.event_name == 'push' && github.repository == 'coursier/coursier'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -406,7 +412,7 @@ jobs:
 
   generate-jar-launchers:
     name: Upload JAR launchers
-    needs: publish
+    needs: ["compile-publish-all", "test", "format"]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -419,10 +425,20 @@ jobs:
     - uses: coursier/setup-action@v2.0
       with:
         jvm: 21
-    - name: Wait for sync to Central
+    - name: Wait for sync to Central (upstream only)
+      if: github.repository == 'coursier/coursier'
       run: ./mill -i waitForSync
-    - name: Copy artifacts
+    - name: Copy artifacts from Central (upstream only)
+      if: github.repository == 'coursier/coursier'
       run: ./mill -i copyJarLaunchers
+    - name: Build JAR launchers locally (forks)
+      if: github.repository != 'coursier/coursier'
+      run: |
+        mkdir -p artifacts
+        ./mill -i cli.assembly
+        ./mill -i cli.launcher
+        cp out/cli/assembly.dest/out.jar artifacts/coursier.jar
+        cp out/cli/launcher.dest/launcher artifacts/coursier
     - uses: actions/attest-build-provenance@v3
       if: startsWith(github.ref, 'refs/tags/v')
       with:
@@ -500,14 +516,23 @@ jobs:
       with:
         name: launchers-jar
         path: artifacts/
+    - name: Create GitHub Release (forks)
+      if: github.repository != 'coursier/coursier'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG="${GITHUB_REF#refs/tags/}"
+        gh release create "$TAG" --title "$TAG" --notes "Release $TAG" --prerelease || true
     - run: ./mill -i uploadLaunchers --directory artifacts/
       env:
-        UPLOAD_GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        # Use GH_TOKEN on upstream, GITHUB_TOKEN on forks
+        UPLOAD_GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
 
   upload-launchers-special-repo:
     name: Upload launchers to dedicated repository
     needs: [generate-native-launchers, generate-compat-native-launchers, generate-native-static-launcher, generate-native-mostly-static-launcher, generate-native-container-launcher, generate-jar-launchers]
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Only run on upstream (requires special repo access)
+    if: startsWith(github.ref, 'refs/tags/v') && github.repository == 'coursier/coursier'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -577,7 +602,8 @@ jobs:
   update-brew-formula:
     name: Update brew formula
     needs: [upload-launchers]
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Only run on upstream (requires brew repo access)
+    if: startsWith(github.ref, 'refs/tags/v') && github.repository == 'coursier/coursier'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -594,7 +620,8 @@ jobs:
 
   update-website-latest:
     name: Update website (snapshot)
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Only run on upstream main branch
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'coursier/coursier'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -616,7 +643,8 @@ jobs:
   update-website:
     name: Update website
     needs: [update-brew-formula, upload-launchers-special-repo]
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Only run on upstream (requires website repo access)
+    if: startsWith(github.ref, 'refs/tags/v') && github.repository == 'coursier/coursier'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
