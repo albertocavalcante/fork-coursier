@@ -107,7 +107,6 @@ object GradleModuleTests extends TestSuite {
       }
 
       test("documentation variant with docstype=groovydoc should have groovydoc classifier") {
-        // Real-world example: org.apache.groovy:groovy:4.0.24 publishes groovydocElements variant
         val variant = GradleModule.Variant(
           name = "groovydocElements",
           attributes = attrs(
