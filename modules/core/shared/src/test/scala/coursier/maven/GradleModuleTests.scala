@@ -31,7 +31,7 @@ object GradleModuleTests extends TestSuite {
           name = "jvmRuntimeElements-published",
           attributes = attrs(
             "org.gradle.category" -> "library",
-            "org.gradle.usage" -> "java-runtime"
+            "org.gradle.usage"    -> "java-runtime"
           ),
           dependencies = Nil,
           dependencyConstraints = Nil,
@@ -40,10 +40,11 @@ object GradleModuleTests extends TestSuite {
           capabilities = Nil
         )
 
-        val module = createGradleModule(Seq(variant))
+        val module  = createGradleModule(Seq(variant))
         val project = module.project(None)
 
-        val publications = project.variantPublications.get(Variant.Attributes("jvmRuntimeElements-published"))
+        val publications =
+          project.variantPublications.get(Variant.Attributes("jvmRuntimeElements-published"))
         assert(publications.isDefined)
         assert(publications.get.nonEmpty)
 
@@ -57,7 +58,7 @@ object GradleModuleTests extends TestSuite {
           attributes = attrs(
             "org.gradle.category" -> "documentation",
             "org.gradle.docstype" -> "sources",
-            "org.gradle.usage" -> "java-runtime"
+            "org.gradle.usage"    -> "java-runtime"
           ),
           dependencies = Nil,
           dependencyConstraints = Nil,
@@ -66,10 +67,11 @@ object GradleModuleTests extends TestSuite {
           capabilities = Nil
         )
 
-        val module = createGradleModule(Seq(variant))
+        val module  = createGradleModule(Seq(variant))
         val project = module.project(None)
 
-        val publications = project.variantPublications.get(Variant.Attributes("jvmSourcesElements-published"))
+        val publications =
+          project.variantPublications.get(Variant.Attributes("jvmSourcesElements-published"))
         assert(publications.isDefined)
         assert(publications.get.nonEmpty)
 
@@ -83,7 +85,7 @@ object GradleModuleTests extends TestSuite {
           attributes = attrs(
             "org.gradle.category" -> "documentation",
             "org.gradle.docstype" -> "javadoc",
-            "org.gradle.usage" -> "java-runtime"
+            "org.gradle.usage"    -> "java-runtime"
           ),
           dependencies = Nil,
           dependencyConstraints = Nil,
@@ -92,7 +94,7 @@ object GradleModuleTests extends TestSuite {
           capabilities = Nil
         )
 
-        val module = createGradleModule(Seq(variant))
+        val module  = createGradleModule(Seq(variant))
         val project = module.project(None)
 
         val publications = project.variantPublications.get(Variant.Attributes("javadocElements"))
@@ -109,7 +111,7 @@ object GradleModuleTests extends TestSuite {
           attributes = attrs(
             "org.gradle.category" -> "documentation",
             "org.gradle.docstype" -> "groovydoc",
-            "org.gradle.usage" -> "java-runtime"
+            "org.gradle.usage"    -> "java-runtime"
           ),
           dependencies = Nil,
           dependencyConstraints = Nil,
@@ -118,7 +120,7 @@ object GradleModuleTests extends TestSuite {
           capabilities = Nil
         )
 
-        val module = createGradleModule(Seq(variant))
+        val module  = createGradleModule(Seq(variant))
         val project = module.project(None)
 
         val publications = project.variantPublications.get(Variant.Attributes("groovydocElements"))
@@ -143,7 +145,7 @@ object GradleModuleTests extends TestSuite {
           capabilities = Nil
         )
 
-        val module = createGradleModule(Seq(variant))
+        val module  = createGradleModule(Seq(variant))
         val project = module.project(None)
 
         val publications = project.variantPublications.get(Variant.Attributes("docElements"))
@@ -159,7 +161,7 @@ object GradleModuleTests extends TestSuite {
           name = "jvmRuntimeElements",
           attributes = attrs(
             "org.gradle.category" -> "library",
-            "org.gradle.usage" -> "java-runtime"
+            "org.gradle.usage"    -> "java-runtime"
           ),
           dependencies = Nil,
           dependencyConstraints = Nil,
@@ -194,7 +196,7 @@ object GradleModuleTests extends TestSuite {
           capabilities = Nil
         )
 
-        val module = createGradleModule(Seq(libraryVariant, sourcesVariant, javadocVariant))
+        val module  = createGradleModule(Seq(libraryVariant, sourcesVariant, javadocVariant))
         val project = module.project(None)
 
         // Library variant - no classifier
